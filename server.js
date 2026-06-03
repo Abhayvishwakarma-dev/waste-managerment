@@ -11,7 +11,29 @@ const app = express();
 
 // Middleware
 // app.use(cors());
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000' }));
+// app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000' }));
+const cors = require('cors');
+
+// Allowed origins
+const allowedOrigins = [
+  'http://localhost:3000',                  // local development
+  'https://removewaste.netlify.app'        // tumhara live frontend (https compulsory)
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
+  credentials: true   // optional
+}));
+
+
 
 app.use(express.json());
 
